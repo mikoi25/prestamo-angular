@@ -1,0 +1,32 @@
+  <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label for="txtNroDocumento" class="form-label">Numero Documento:</label>
+                         <shared-search-input 
+                              placeholder="Buscar por NroDocumento"
+                            (value)="query.set($event)"
+                            [debounceTime]="300"
+                            [initialValue]="query()"
+                         />
+                       <form novalidate>
+                           <div class="mb-3"  >
+                            <label for="txtNombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control data-in"  [formField]="customerForm.firstName" autocomplete="off"   >
+                        </div>
+                        <div class="mb-3" >
+                            <label for="txtApellido" class="form-label">Apellido:</label>
+                            <input type="text" class="form-control data-in" [formField]="customerForm.lastName"autocomplete="off"  >
+                        </div>
+                        <div class="mb-3" >
+                            <label for="txtCorreo" class="form-label">Correo:</label>
+                            <input type="text" class="form-control data-in"  autocomplete="off" [formField]="customerForm.email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtTelefono" class="form-label">Telefono:</label>
+                            <input type="text" class="form-control data-in" autocomplete="off" [formField]="customerForm.phone">
+                        </div>
+                       </form>
+                    </div>
+                </div>
+
+            </div>

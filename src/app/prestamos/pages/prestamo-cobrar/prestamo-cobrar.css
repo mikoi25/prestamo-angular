@@ -1,0 +1,53 @@
+  .page-head{ padding:2rem 0 1.25rem; }
+  .row-2{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
+  .row-2 .field{ min-width:0; }
+  @media (max-width:420px){ .row-2{ grid-template-columns:1fr; } }
+  .field{ margin-bottom:1.25rem; min-width:0; }
+  .readonly-field .form-control-kodoti{ background:var(--surface-2); }
+  .panel-body{ overflow-x:hidden; }
+  .form-control-kodoti, .form-select-kodoti{ min-width:0; width:100%; }
+  .card-kodoti{ overflow:hidden; }
+  .table-wrap{ overflow-x:auto; }
+
+  .total-row{
+    display:flex;
+    align-items:flex-end;
+    gap:1rem;
+    flex-wrap:wrap;
+    margin-top:1.4rem;
+    padding-top:1.4rem;
+    border-top:1px dashed var(--line);
+  }
+  .total-row .field{ flex:1; min-width:220px; margin-bottom:0; }
+
+  .cuota-check{ width:34px; text-align:center; }
+
+  .pagination-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:.4rem;
+    margin-top:1rem;
+    flex-wrap:wrap;
+  }
+  .btn-page{
+    min-width:34px;
+    height:34px;
+    padding:0 .5rem;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--surface-2);
+    color:var(--text, #cfd8d5);
+    font:inherit;
+    font-size:.9rem;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .btn-page:hover:not(:disabled){ border-color:#2E9179; }
+  .btn-page.active{
+    background:#2E9179;
+    border-color:#2E9179;
+    color:#fff;
+    font-weight:600;
+  }
+  .btn-page:disabled{ opacity:.4; cursor:not-allowed; }

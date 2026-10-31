@@ -1,0 +1,14 @@
+  .page-head{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:1rem;
+    padding:2rem 0 1.5rem;
+  }
+  .page-head h1{ font-size:1.6rem; font-weight:700; margin:0; }
+  .field{ margin-bottom:1.25rem; min-width:0; }
+  .row-2{ display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+  .row-2 .field{ min-width:0; }
+  @media (max-width:420px){ .row-2{ grid-template-columns:1fr; } }
+  .divider{ border-top:1px dashed var(--line); margin:0.5rem 0 1.4rem; }
+  .panel-icon{ opacity:0.85; }
+  .panel-body{ overflow-x:hidden; }
+  .form-control-kodoti, .form-select-kodoti{ min-width:0; width:100%; }

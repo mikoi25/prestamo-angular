@@ -1,0 +1,60 @@
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+import { IdentityService } from '../../../auth/service/identity.service';
+
+@Component({
+  selector: 'app-customers-page',
+  imports: [RouterLink,RouterLinkActive,RouterOutlet],
+  templateUrl: './customers-page.html',
+  styles: `
+  :host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 100vh;
+}
+
+.container {
+  flex-grow: 1;
+  width: 100%;
+}
+
+  `,
+})
+export class CustomersPage implements OnInit, OnDestroy {
+  readonly sidebarOpen = signal(false);
+  readonly clock = signal('');
+  private timer?: ReturnType<typeof setInterval>;
+  private router = inject(Router);
+  private auth = inject(IdentityService);
+
+
+  ngOnInit(): void {
+    this.updateClock();
+    this.timer = setInterval(() => this.updateClock(), 1000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  private updateClock(): void {
+    const now = new Date();
+    this.clock.set(now.toString().replace(/GMT.*/, '') + '(hora estándar de Chile)');
+  }
+
+  openSidebar(): void {
+    this.sidebarOpen.set(true);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+
+}

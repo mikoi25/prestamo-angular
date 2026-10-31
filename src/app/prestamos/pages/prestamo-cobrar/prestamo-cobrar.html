@@ -1,0 +1,171 @@
+
+
+<div class="container">
+  <div class="page-head">
+    <div class="eyebrow mb-1">Caja</div>
+    <h1>Cobrar Préstamo</h1>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- PANEL PRESTAMO -->
+    <div class="col-lg-5">
+      <div class="card-kodoti">
+        <div class="panel-head">📄 Préstamo</div>
+        <div class="panel-body">
+
+        <div class="field">
+  <label class="form-label-kodoti">Número Documento</label>
+  <div class="input-group-kodoti">
+    <input
+      type="text"
+      class="form-control-kodoti"
+      placeholder="Ej: 12.345.678-9"
+      [value]="searchTerm()"
+      (input)="actualizarState($event)"
+      (keyup.enter)="buscar()"
+    />
+    <button class="btn-search" [disabled]="buscando" (click)="buscar()">
+      {{ buscando ? '...' : '🔍' }}
+    </button>
+  </div>
+
+  @if (errorRut()) {
+    <small class="text-danger">{{ errorRut() }}</small>
+  }
+
+  @if (noEncontrado) {
+    <small class="text-danger">No se encontró ningún cliente con ese documento.</small>
+  }
+</div>
+        
+        @if(prestamo()){
+                        <div class="row-2">
+              <div class="field readonly-field">
+                <label class="form-label-kodoti">Nro Préstamo</label>
+                <input class="form-control-kodoti" readonly [value]="prestamo()!.prestamoId">
+              </div>
+              <div class="field readonly-field">
+                <label class="form-label-kodoti">Nombre Cliente</label>
+                <input class="form-control-kodoti" readonly [value]="prestamo()!.name">
+              </div>
+            </div>
+            <div class="row-2">
+              <div class="field readonly-field">
+                <label class="form-label-kodoti">Monto Préstamo</label>
+                <input class="form-control-kodoti" readonly [value]="fmt(prestamo()!.montoPrestamo)">
+              </div>
+              <div class="field readonly-field">
+                <label class="form-label-kodoti">Interés %</label>
+                <input class="form-control-kodoti" readonly [value]="fmt(prestamo()!.interes)">
+              </div>
+            </div>
+            <div class="row-2" style="margin-bottom:0;">
+              <div class="field readonly-field" style="margin-bottom:0;">
+                <label class="form-label-kodoti">Nro. Cuotas</label>
+                <input class="form-control-kodoti" readonly [value]="prestamo()!.nroCuotas">
+              </div>
+              <div class="field readonly-field" style="margin-bottom:0;">
+                <label class="form-label-kodoti">Monto Total</label>
+                <input class="form-control-kodoti" readonly [value]="fmt(prestamo()!.montoTotal)">
+              </div>
+            </div>
+            <div class="row-2" style="margin-top:1.25rem; margin-bottom:0;">
+              <div class="field readonly-field" style="margin-bottom:0;">
+                <label class="form-label-kodoti">Forma de pago</label>
+                <input class="form-control-kodoti" readonly [value]="prestamo()!.formaDePago">
+              </div>
+              <div class="field readonly-field" style="margin-bottom:0;">
+                <label class="form-label-kodoti">Tipo Moneda</label>
+                <input class="form-control-kodoti" readonly [value]="prestamo()!.moneda">
+              </div>
+            </div>
+
+        }
+
+          
+   
+
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DETALLE / CUOTAS -->
+    <div class="col-lg-7">
+      <div class="card-kodoti">
+        <div class="panel-head">📄 Detalle</div>
+         @if(prestamo()){
+                  <div class="panel-body" >
+
+          <div class="table-wrap">
+            <table class="table-kodoti">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Nro Cuota</th>
+                  <th>Fecha Pago</th>
+                  <th>Monto Cuota</th>
+                  <th>Estado</th>
+                  <th>Fecha Cancelado</th>
+                </tr>
+              </thead>
+              <tbody>
+               @for (cuota of cuotasPagina; track $index) {
+                      <tr>
+                  <td class="cuota-check">
+                    <input type="checkbox" class="chk-kodoti"
+                           [checked]="cuota.estado === EstadoCuota.Pagado || selected.has(cuota.nroCuota)"
+                           [disabled]="cuota.estado === EstadoCuota.Pagado"
+                           (change)="toggleCuota(cuota, $any($event.target).checked)">
+                  </td>
+                  <td class="id-cell">{{ cuota.nroCuota }}</td>
+                  <td>{{ cuota.fechaPago }}</td>
+                  <td class="price-cell">{{ fmt(cuota.montoCuota) }}</td>
+                  <td>
+                    <span class="badge-estado"
+                          [ngClass]="cuota.estado === EstadoCuota.Pagado ? 'badge-cancelado' : 'badge-pendiente'">
+                      {{ cuota.estado === EstadoCuota.Pagado ? 'Cancelado' : 'Pendiente' }}
+                    </span>
+                  </td>
+                  <td>{{ cuota.fechaPagado ?? '' }}</td>
+                </tr>
+
+               }
+               
+                
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-wrap">
+            <button class="btn-page" [disabled]="currentPage === 1" (click)="irAPagina(currentPage - 1)">‹</button>
+            @for (p of pages; track $index) {
+            <button class="btn-page"  [class.active]="p === currentPage"
+                    (click)="irAPagina(p)">{{ p }}</button>
+            }
+            <button class="btn-page" [disabled]="currentPage === totalPages" (click)="irAPagina(currentPage + 1)">›</button>
+          </div>
+
+          <div class="total-row">
+            <div class="field">
+              <label class="form-label-kodoti">Total a pagar</label>
+              <input type="text" class="form-control-kodoti" readonly [value]="fmt(totalAPagar)">
+            </div>
+            <button class="btn-kodoti btn-gold" [disabled]="registrandoPago" (click)="registrarPago()">
+              {{ registrandoPago ? 'Registrando...' : '💰 Registrar pago' }}
+            </button>
+          </div>
+
+        </div>
+         }
+        @if(!prestamo()){
+            <div class="panel-body" >
+              <p class="text-muted mb-0">Busca un cliente por número de documento para ver su préstamo.</p>
+            </div>
+
+        }
+      </div>
+    </div>
+
+  </div>
+</div>

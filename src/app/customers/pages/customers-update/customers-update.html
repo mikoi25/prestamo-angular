@@ -1,0 +1,31 @@
+<h1>Nuevo Clients</h1>
+<form novalidate>
+     <div class="mb-3">
+    <label  class="form-label">NroDocumento</label>
+    <input type="text" class="form-control" [formField]="customerForm.nroDocumento" >
+  </div>
+  <div class="mb-3">
+    <label  class="form-label">FirstName</label>
+    <input type="text" class="form-control" [formField]="customerForm.firstName">
+  </div>
+  <div class="mb-3">
+    <label  class="form-label">LastName</label>
+    <input type="text" class="form-control" [formField]="customerForm.lastName">
+  </div>
+  <div class="mb-3">
+    <label  class="form-label">Email</label>
+    <input type="email" class="form-control" [formField]="customerForm.email">
+  </div>
+  <div class="mb-3">
+    <label  class="form-label">Phone</label>
+    <input type="text" class="form-control" [formField]="customerForm.phone">
+  </div>
+</form>
+<button type="button"   class="btn btn-primary" (click)="save()">Actualizar</button>
+
+
+<pre>
+  {{
+      registrationModel() | json
+  }}
+</pre>

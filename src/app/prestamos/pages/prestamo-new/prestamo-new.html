@@ -1,0 +1,148 @@
+<div class="container">
+  <div class="page-head">
+    <div>
+      <div class="eyebrow mb-1">Registro de crédito</div>
+      <h1>Nuevo Préstamo</h1>
+    </div>
+    <div class="d-flex gap-2">
+      <a routerLink="/list-prestamo" class="btn-kodoti btn-dark">↺ Volver</a>
+      <button class="btn-kodoti btn-teal" [disabled]="registrando()" (click)="registrar()">
+        {{ registrando() ? 'Registrando...' : '✓ Registrar' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- PANEL CLIENTE -->
+    <div class="col-lg-6">
+      <div class="card-kodoti h-100">
+        <div class="panel-head"><span class="panel-icon">👤</span> Cliente</div>
+        <div class="panel-body" >
+
+          <div class="field">
+            <label class="form-label-kodoti">Número Documento</label>
+            <div class="input-group-kodoti">
+              <input 
+              class="form-control-kodoti"
+                name="dpi_paciente"
+              [value]="searchTerm()"  
+              #txtNroDoc 
+              placeholder="Ej: 361633"   
+              pattern="[0-9]{0,9}"
+             (input)="actualizarState($event)"
+              />
+              <button class="btn-search" [disabled]="buscandoCliente()" (click)="buscarCliente()">
+                {{ buscandoCliente() ? '...' : '🔍' }}
+              </button>
+            </div>
+            @if(clienteNoEncontrado()){
+             <small class="text-danger" >
+              No se encontró ningún cliente con ese documento.
+            </small>
+            }
+           
+          </div>
+
+          <form novalidate>
+                <div class="field">
+            <label class="form-label-kodoti">Nombre</label>
+            <input type="text" class="form-control-kodoti" [formField]="customerForm.firstName" placeholder="Nombre del cliente">
+          </div>
+
+          <div class="field">
+            <label class="form-label-kodoti">Apellido</label>
+            <input type="text" class="form-control-kodoti" [formField]="customerForm.lastName" placeholder="Apellido del cliente">
+          </div>
+
+          <div class="field">
+            <label class="form-label-kodoti">Correo</label>
+            <input type="email" class="form-control-kodoti" [formField]="customerForm.email" placeholder="correo@ejemplo.com">
+          </div>
+
+          <div class="field" style="margin-bottom:0;">
+            <label class="form-label-kodoti">Teléfono</label>
+            <input type="text" class="form-control-kodoti" [formField]="customerForm.phone" placeholder="+56 9 ...">
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DETALLE -->
+    <div class="col-lg-6">
+      <div class="card-kodoti h-100">
+        <div class="panel-head"><span class="panel-icon">📄</span> Detalle</div>
+        <div class="panel-body" >
+
+         <form novalidate>
+              <div class="row-2">
+            <div class="field">
+              <label class="form-label-kodoti">Monto Préstamo</label>
+              <input type="number" class="form-control-kodoti"  [formField]="prestamoForm.MontoPrestamo  " placeholder="0.00">
+            </div>
+            <div class="field">
+              <label class="form-label-kodoti">Interés %</label>
+              <input type="number" class="form-control-kodoti"  [formField]="prestamoForm.InteresPorcentaje" placeholder="0.00">
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label class="form-label-kodoti">Nro. Cuotas</label>
+              <input type="number" class="form-control-kodoti"  [formField]="prestamoForm.NroCuotas" placeholder="0">
+            </div>
+            <div class="field">
+              <label class="form-label-kodoti">Forma de pago</label>
+              <select class="form-select-kodoti"  [formField]="prestamoForm.FormaDePago">
+                @for (opt of formaPagoOptions; track $index) {
+                    <option  [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label class="form-label-kodoti">Tipo Moneda</label>
+              <select class="form-select-kodoti"  [formField]="prestamoForm.Moneda">
+                <option>Soles</option>
+                <option>Dólares</option>
+                <option>Pesos CLP</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="form-label-kodoti">Fecha Inicio</label>
+              <input type="date" class="form-control-kodoti"  [formField]="prestamoForm.FechaInicioPago">
+            </div>
+          </div>
+         </form>
+
+          <div class="divider"></div>
+
+          <div class="field">
+            <button class="btn-kodoti btn-dark w-100" (click)="calcular()">√x Calcular</button>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label class="form-label-kodoti">Monto por Cuota</label>
+              <input type="text" class="form-control-kodoti" [value]="fmt(this.prestamoService.valorPorCuota())" disabled>
+            </div>
+            <div class="field">
+              <label class="form-label-kodoti">Monto Interés</label>
+              <input type="text" class="form-control-kodoti" [value]="fmt(this.prestamoService.valorInteres())" disabled>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:0;">
+            <label class="form-label-kodoti">Monto Total</label>
+            <input type="text" class="form-control-kodoti" [value]="fmt(this.prestamoService.valorTotal())" disabled>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
