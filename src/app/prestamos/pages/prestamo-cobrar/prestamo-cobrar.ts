@@ -1,4 +1,4 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import { Cuota, ToPrestamo } from "../../mappers/prestamo.mapper";
 import { PrestamoEstado } from "../../interfaces/prestamo.interface";
 import { httpPrestamoService } from "../../services/http_prestamo.service";
@@ -144,4 +144,48 @@ export class PrestamoCobrar {
       },
     });
   }
+
+
+ readonly texto = signal('');
+ readonly abierto = signal(false);
+ readonly indiceActivo = signal(0);
+ readonly seleccionado = signal<ToPrestamo| null>(null);
+
+ readonly filtrados = computed(() =>{
+
+ });
+
+ onInput(valor :string):void{
+  this.texto.set(valor);
+  this.abierto.set(true);
+  this.indiceActivo.set(0);
+  this.seleccionado.set(null);
+ }
+seleccionar(toPrestamo:ToPrestamo):void {
+  this.texto.set(toPrestamo.nroDocumento);
+  this.seleccionado.set(toPrestamo);
+  this.abierto.set(false);
+}
+ cerrar():void {
+  this.abierto.set(false);
+ }
+
+  //  onKeydown(e: KeyboardEvent): void {
+  //   const lista = this.filtrados();
+  //   if (!lista.length) return;
+
+  //   if (e.key === 'ArrowDown') {
+  //     e.preventDefault();
+  //     this.abierto.set(true);
+  //     this.indiceActivo.update((i) => Math.min(i + 1, lista.length - 1));
+  //   } else if (e.key === 'ArrowUp') {
+  //     e.preventDefault();
+  //     this.indiceActivo.update((i) => Math.max(i - 1, 0));
+  //   } else if (e.key === 'Enter' && this.abierto()) {
+  //     e.preventDefault();
+  //     this.seleccionar(lista[this.indiceActivo()]);
+  //   } else if (e.key === 'Escape') {
+  //     this.abierto.set(false);
+  //   }
+  // }
 }

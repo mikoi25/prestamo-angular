@@ -1,31 +1,107 @@
-<h1>Nuevo Clients</h1>
-<form novalidate>
-     <div class="mb-3">
-    <label  class="form-label">NroDocumento</label>
-    <input type="text" class="form-control" [formField]="customerForm.nroDocumento" >
-  </div>
-  <div class="mb-3">
-    <label  class="form-label">FirstName</label>
-    <input type="text" class="form-control" [formField]="customerForm.firstName">
-  </div>
-  <div class="mb-3">
-    <label  class="form-label">LastName</label>
-    <input type="text" class="form-control" [formField]="customerForm.lastName">
-  </div>
-  <div class="mb-3">
-    <label  class="form-label">Email</label>
-    <input type="email" class="form-control" [formField]="customerForm.email">
-  </div>
-  <div class="mb-3">
-    <label  class="form-label">Phone</label>
-    <input type="text" class="form-control" [formField]="customerForm.phone">
+<div class="container-fluid px-4">
+  <div class="page-head">
+    <div class="eyebrow mb-1">Clientes</div>
+    <h1>Crear Cliente</h1>
   </div>
 
- 
-</form>
- <button  class="btn btn-primary" (click)="save()">Submit</button>
+  <div class="card-kodoti w-100">
+    <div class="panel-head">👤 Datos del cliente</div>
+    <div class="panel-body">
 
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
 
- <pre>
-  {{ registrationModel() | json}}
- </pre>
+        <div class="row g-4">
+
+          <!-- 1. nroDocumento -->
+          <div class="col-md-4">
+            <div class="field">
+              <label class="form-label-kodoti">RUT</label>
+              <input
+                type="text"
+                class="form-control-kodoti"
+                formControlName="nroDocumento"
+                placeholder="Ej: 12.345.678-5"
+                maxlength="12"
+                autocomplete="off"
+                (input)="onRutInput($event)"
+              />
+              @if (f.nroDocumento.touched && f.nroDocumento.hasError('required')) {
+                <small class="text-danger">El RUT es obligatorio.</small>
+              }
+              @if (f.nroDocumento.touched && f.nroDocumento.hasError('rutInvalido')) {
+                <small class="text-danger">RUT inválido. Revisa el número y el dígito verificador.</small>
+              }
+            </div>
+          </div>
+
+          <!-- 2. email -->
+          <div class="col-md-8">
+            <div class="field">
+              <label class="form-label-kodoti">Correo Electronico</label>
+              <input type="text" class="form-control-kodoti" formControlName="email" placeholder="email completo" />
+              @if (f.email.touched && f.email.hasError('required')) {
+                <small class="text-danger">El nombre es obligatorio.</small>
+              }
+             
+            </div>
+          </div>
+
+          <!-- 3. phone -->
+          <div class="col-md-4">
+            <div class="field">
+              <label class="form-label-kodoti">Teléfono (opcional)</label>
+              <input type="text" class="form-control-kodoti" formControlName="phone" placeholder="+56 9 1234 5678" />
+              @if (f.phone.touched && f.phone.hasError('pattern')) {
+                <small class="text-danger">Teléfono no válido.</small>
+              }
+            </div>
+          </div>
+
+          <!-- 4. nombres -->
+          <div class="col-md-4">
+            <div class="field">
+              <label class="form-label-kodoti">Noombre</label>
+              <input type="email" class="form-control-kodoti" formControlName="firstName" placeholder="Ingresar un nombres" />
+              @if (f.firstName.touched && f.firstName.hasError('email')) {
+                <small class="text-danger">Email no válido.</small>
+              }
+               @if (f.firstName.touched && f.firstName.hasError('minlength')) {
+                <small class="text-danger">El nombre debe tener al menos 3 caracteres.</small>
+              }
+            </div>
+          </div>
+
+          <!-- 5. Apellidos -->
+          <div class="col-md-4">
+            <div class="field">
+              <label class="form-label-kodoti">Apellido</label>
+              <input type="text" class="form-control-kodoti" formControlName="lastName" placeholder="Ingresr apellidos" />
+              @if (f.lastName.touched && f.lastName.hasError('maxlength')) {
+                <small class="text-danger">Máximo 150 caracteres.</small>
+              }
+               @if (f.lastName.touched && f.lastName.hasError('minlength')) {
+                <small class="text-danger">El nombre debe tener al menos 3 caracteres.</small>
+              }
+            </div>
+          </div>
+
+        </div>
+
+        @if (errorServidor()) {
+          <div class="text-danger mt-3">{{ errorServidor() }}</div>
+        }
+        @if (exito()) {
+          <div class="text-success mt-3">{{ exito() }}</div>
+        }
+
+        <div class="mt-4 d-flex justify-content-end">
+          <button type="submit" class="btn-kodoti btn-gold" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando...' : '💾 Crear cliente' }}
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>

@@ -1,43 +1,43 @@
-import { Component,effect,inject, signal } from '@angular/core';
+import { Component, effect, inject, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CustomersService } from '../../services/customers.service';
-import { CustomerCreationItem, CustomerItem } from '../../interfaces/customers.interface';
 import { switchMap } from 'rxjs';
-import { form, FormField, required } from '@angular/forms/signals';
-import { JsonPipe } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { rutValidator } from '../../util/rut.validator';
+import { formatearRut, limpiarRut } from '../../../utils/rut.util';
 
 @Component({
   selector: 'customers-update',
-  imports: [FormField , JsonPipe],
+  imports: [ReactiveFormsModule],
   templateUrl: './customers-update.html',
-  styles: ``,
+  styles: `
+    .page-head{ padding:2.25rem 0 1.25rem; }
+.page-head h1{ font-size:1.9rem; font-weight:700; }
+.toolbar-top{ margin-bottom:1.5rem; }
+.table-wrap{ overflow-x:auto; }
+.footer-row{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:1.25rem; flex-wrap:wrap; gap:0.75rem;
+}
+.results-count{ font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--muted); }
+  `,
 })
-export class CustomersUpdate {
+export class CustomersUpdate implements OnDestroy {
+  private fb = inject(FormBuilder);
   private router = inject(Router);
   private customerService = inject(CustomersService);
   private route = inject(ActivatedRoute);
+  private timeoutId?: ReturnType<typeof setTimeout>;
 
-   constructor() {
+  guardando = signal(false);
 
-    effect(() => {
-      console.log('Effect ejecutado');
+  exito = signal('');
 
-      const customer = this.customer();
-      console.log('Customer:', customer);
-
-      if (!customer) return;
-
-      const { clientId, ...item } = customer;
-
-      console.log('Antes del set');
-      this.registrationModel.set(item);
-      console.log('Después del set');
-    });
-   
-    effect(() => {
-      console.log('registrationModel cambió', this.registrationModel());
-    });
+  ngOnDestroy() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
   }
 
   private customer = toSignal(
@@ -47,48 +47,81 @@ export class CustomersUpdate {
   );
 
 
-   registrationModel = signal<CustomerCreationItem>({
-    nroDocumento: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: ''
-  })
-  //formulario 
-  customerForm = form(this.registrationModel, (schemaPath) => {
-    required(schemaPath.nroDocumento, { message: 'nroDocumento es requerido.' }),
-      required(schemaPath.firstName, { message: 'firstName es requerido.' }),
-      required(schemaPath.lastName, { message: 'lastName es requerido.' }),
-      required(schemaPath.email, { message: 'email es requerido.' }),
-      required(schemaPath.phone, { message: 'phone es requerido.' })
+  form = this.fb.nonNullable.group({
+    nroDocumento: ['', [Validators.required, rutValidator]],
+    firstName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+    lastName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+    phone: ['', [Validators.pattern(/^\+?[0-9 ]{8,15}$/)]],
+    email: ['', [Validators.email]],
   });
+  constructor() {
+    effect(() => {
+      const customer = this.customer();
 
- 
-    save() {
+      if (!customer) return;
 
-    const client = this.customer();
+      this.form.patchValue({
+        nroDocumento: customer.nroDocumento,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        email: customer.email,
+        phone: customer.phone
+      });
+    });
+  }
 
-    if (!client) {
+  get f() { return this.form.controls; }
+
+  onRutInput(e: Event): void {
+    const input = e.target as HTMLInputElement;
+    const formateado = formatearRut(limpiarRut(input.value).slice(0, 9)); // máx. 8 dígitos + DV
+    input.value = formateado;
+    this.f.nroDocumento.setValue(formateado);
+
+    this.exito.set('');
+  }
+
+  save() {
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
-    if (!this.customerForm().valid()) {
-      return;
-    }
 
-    const customer: CustomerItem = {
-      clientId: client.clientId,
-      ...this.registrationModel()
+    const customer = this.customer();
+
+    this.guardando.set(true);
+
+    this.exito.set('');
+
+
+    if (!customer) return;
+
+    const data = {
+      ...this.form.getRawValue(),
+      clientId: customer.clientId
     };
 
-    if (!customer) {
-      return;
-    }
-
-    this.customerService.update(customer).subscribe({
+    this.customerService.update(data).subscribe({
       next: () => {
-        this.router.navigate(['/customers/list']);
+        this.guardando.set(false);
+        this.exito.set('Cliente actualizado correctamente');
+        // Cancelar temporizador anterior si existe
+        if (this.timeoutId) {
+          clearTimeout(this.timeoutId);
+        }
+
+        // Esperar 3 segundos y redirigir
+        this.timeoutId = setTimeout(() => {
+          this.router.navigate(['/customers/list']);
+        }, 500);
+
+
+
+
       },
       error: (err) => {
+        this.guardando.set(false);
         console.error(err);
         alert('No fue posible registrar el cliente.');
       }

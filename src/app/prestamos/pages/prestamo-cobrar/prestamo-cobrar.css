@@ -51,3 +51,29 @@
     font-weight:600;
   }
   .btn-page:disabled{ opacity:.4; cursor:not-allowed; }
+
+  //select 
+   .opciones {
+      position: absolute; z-index: 20; left: 0; right: 0;
+      margin: 4px 0 0; padding: 0.3rem; list-style: none;
+      max-height: 230px; overflow-y: auto;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+    }
+    .opciones li {
+      display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: background .12s ease;
+    }
+    .opciones li.activo {
+      background: var(--teal-soft);
+      border-left-color: var(--teal);
+    }
+
+    .doc { color: var(--ink); font-weight: 600; font-size: 0.9rem; }
+    .nombre { color: var(--muted); font-size: 0.85rem; }
